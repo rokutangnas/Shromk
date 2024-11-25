@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shrek Spinner</title>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    #left-panel {
+      width: 30%;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      margin-right: 20px;
+    }
+    #left-panel ul {
+      list-style: none;
+      padding: 0;
+    }
+    #left-panel li {
+      margin: 5px 0;
+      font-size: 18px;
+      color: #555;
+    }
+    #main {
+      flex: 1;
+      text-align: center;
+    }
+    #wheel-container {
+      margin: 0 auto 20px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 8px solid #ddd;
+      background: conic-gradient(
+        #6c757d 0% 5%, #ffcc00 5% 15%, #28a745 15% 25%, 
+        #dc3545 25% 35%, #007bff 35% 45%, #6c757d 45% 55%, 
+        #ffcc00 55% 65%, #28a745 65% 75%, #dc3545 75% 85%, 
+        #007bff 85% 100%
+      );
+      animation: spin 0s ease-out;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    #spin-btn {
+      padding: 10px 20px;
+      font-size: 18px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #spin-btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <div id="left-panel">
+    <h2>Remaining Options</h2>
+    <ul id="options-list">
+      <!-- Populated dynamically -->
+    </ul>
+  </div>
+  <div id="main">
+    <h1>Shrek Spinner</h1>
+    <div id="wheel-container"></div>
+    <button id="spin-btn">Spin</button>
+    <div id="result"></div>
+  </div>
+  <script>
+    // Firebase configuration
+    
+const firebaseConfig = {
+  apiKey: "AIzaSyBlADr4zEhvrbBpY64jdDD1n6zw_7G-AVI",
+  authDomain: "shrooonk.firebaseapp.com",
+  databaseURL: "https://shrooonk-default-rtdb.firebaseio.com/",
+  projectId: "shrooonk",
+  storageBucket: "shrooonk.firebasestorage.app",
+  messagingSenderId: "566622125657",
+  appId: "1:566622125657:web:278a9d48c91ce4186dbb48"
+};
+
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let characters = [];
+
+    // Fetch characters from Firebase
+    const optionsList = document.getElementById('options-list');
+    db.ref('characters').on('value', (snapshot) => {
+      characters = snapshot.val() || [];
+      optionsList.innerHTML = ''; // Clear the list
+      characters.forEach((character) => {
+        const li = document.createElement('li');
+        li.textContent = character;
+        optionsList.appendChild(li);
+      });
+    });
+
+    // Spin the wheel
+    const spinBtn = document.getElementById('spin-btn');
+    const resultDiv = document.getElementById('result');
+    const wheelContainer = document.getElementById('wheel-container');
+
+    spinBtn.addEventListener('click', () => {
+      if (characters.length === 0) {
+        resultDiv.textContent = "No characters left!";
+        return;
+      }
+
+      // Add spin animation
+      wheelContainer.style.animation = "spin 2s ease-out";
+
+      setTimeout(() => {
+        wheelContainer.style.animation = ""; // Reset animation
+
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        const chosenCharacter = characters.splice(randomIndex, 1)[0];
+
+        // Update Firebase
+        db.ref('characters').set(characters);
+
+        resultDiv.textContent = `You got: ${chosenCharacter}`;
+      }, 2000); // Match animation duration
+    });
+  </script>
+</body>
+</html>
