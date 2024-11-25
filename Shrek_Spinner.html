@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shrek Spinner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f3f3;
+    }
+    #wheel-container {
+      margin: 50px auto;
+      position: relative;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 8px solid #ddd;
+      background: conic-gradient(
+        #6c757d 0% 5%, #ffcc00 5% 15%, #28a745 15% 25%, 
+        #dc3545 25% 35%, #007bff 35% 45%, #6c757d 45% 55%, 
+        #ffcc00 55% 65%, #28a745 65% 75%, #dc3545 75% 85%, 
+        #007bff 85% 100%
+      );
+    }
+    #spin-btn {
+      padding: 10px 20px;
+      font-size: 18px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #spin-btn:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shrek Character Spinner</h1>
+  <div id="wheel-container"></div>
+  <button id="spin-btn">Spin the Wheel</button>
+  <div id="result"></div>
+
+  <script>
+    const characters = [
+      "Shrek", "Donkey", "Fiona", "Puss in Boots", "Lord Farquaad", 
+      "Dragon", "Gingerbread Man", "Pinocchio", "The Three Little Pigs", 
+      "The Big Bad Wolf", "King Harold", "Queen Lillian", "Prince Charming", 
+      "Fairy Godmother", "Doris", "Captain Hook", "Mongo (the Giant Gingerbread Man)",
+      "Thelonious", "Magic Mirror", "Three Blind Mice"
+    ];
+
+    let spinsLeft = 3;
+    const spinBtn = document.getElementById("spin-btn");
+    const resultDiv = document.getElementById("result");
+
+    spinBtn.addEventListener("click", () => {
+      if (spinsLeft > 0) {
+        // Spin logic
+        spinsLeft--;
+        spinBtn.disabled = true;
+
+        // Simulate spinning effect
+        let spins = 30; // Number of "visual spins"
+        const interval = setInterval(() => {
+          const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
+          resultDiv.textContent = `Spinning... ${randomCharacter}`;
+          spins--;
+
+          if (spins <= 0) {
+            clearInterval(interval);
+
+            // Final pick
+            const chosenCharacter = characters.splice(Math.floor(Math.random() * characters.length), 1)[0];
+            resultDiv.textContent = `You got: ${chosenCharacter}`;
+            spinBtn.disabled = spinsLeft === 0;
+
+            if (spinsLeft === 0) {
+              resultDiv.textContent += " - FINAL PICK!";
+              spinBtn.disabled = true;
+            } else {
+              spinBtn.disabled = false;
+            }
+          }
+        }, 100); // Spinning speed
+      }
+    });
+  </script>
+</body>
+</html>
